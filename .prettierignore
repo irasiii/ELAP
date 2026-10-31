@@ -1,0 +1,4 @@
+node_modules
+.next
+.expo
+package-lock.json

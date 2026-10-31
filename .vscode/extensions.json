@@ -1,0 +1,13 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "editorconfig.editorconfig",
+    "expo.vscode-expo-tools",
+    "github.vscode-github-actions",
+    "github.vscode-pull-request-github",
+    "atlassian.atlascode",
+    "redhat.vscode-yaml",
+    "usernamehw.errorlens"
+  ]
+}

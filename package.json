@@ -1,11 +1,18 @@
 {
   "name": "elap",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
     "web": "npm run dev -w web",
     "web:build": "npm run build -w web",
     "mobile": "npm run start -w mobile",
-    "typecheck": "npm run typecheck -w @elap/core && npx tsc --noEmit -p apps/web && npx tsc --noEmit -p apps/mobile"
+    "typecheck": "npm run typecheck -w @elap/core && npx tsc --noEmit -p apps/web && npx tsc --noEmit -p apps/mobile",
+    "audit:prod": "npm audit --omit=dev --audit-level=high"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }

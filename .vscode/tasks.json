@@ -1,0 +1,10 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "ELAP: web + API (dev)", "type": "npm", "script": "web", "isBackground": true, "problemMatcher": [] },
+    { "label": "ELAP: mobile (Expo)", "type": "npm", "script": "mobile", "isBackground": true, "problemMatcher": [] },
+    { "label": "ELAP: typecheck", "type": "npm", "script": "typecheck", "problemMatcher": ["$tsc"], "group": "build" },
+    { "label": "ELAP: build web", "type": "npm", "script": "web:build", "problemMatcher": [], "group": { "kind": "build", "isDefault": true } },
+    { "label": "ELAP: security audit", "type": "npm", "script": "audit:prod", "problemMatcher": [] }
+  ]
+}
