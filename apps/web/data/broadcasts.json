@@ -1,0 +1,18 @@
+{
+  "_help": "Edit this file to show TV channel, commentator and official where-to-watch links. 'leagues' applies to every match in a league; 'matches' overrides one fixture by its API-Football fixture ID. Only add licensedStreamUrl for streams you hold the rights to.",
+  "leagues": {
+    "39": {
+      "watch": [
+        { "country": "Example country", "service": "[Official broadcaster]", "url": "https://example.com" }
+      ]
+    }
+  },
+  "matches": {
+    "0": {
+      "channel": "[Channel name]",
+      "commentator": "[Commentator name]",
+      "watch": [],
+      "licensedStreamUrl": null
+    }
+  }
+}
