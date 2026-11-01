@@ -46,6 +46,11 @@ export interface AfLeague {
   country: { name: string; code: string | null; flag: string | null };
 }
 
+export interface AfTeam {
+  team: { id: number; name: string; country: string | null; founded: number | null; logo: string | null };
+  venue: { name: string | null; city: string | null } | null;
+}
+
 export const emptyBroadcast = (): Broadcast => ({
   channel: null,
   commentator: null,

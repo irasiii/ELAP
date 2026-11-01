@@ -1,0 +1,185 @@
+{
+  "_help": "Translations for names that API-Football returns in English. 'leagues' is keyed by league ID, 'teams' by the exact English team name. Add entries as ELAP grows; anything missing shows in English.",
+  "leagues": {
+    "1": {
+      "ar": "كأس العالم",
+      "fr": "Coupe du monde"
+    },
+    "2": {
+      "ar": "دوري أبطال أوروبا",
+      "fr": "Ligue des champions"
+    },
+    "3": {
+      "ar": "الدوري الأوروبي",
+      "fr": "Ligue Europa"
+    },
+    "848": {
+      "ar": "دوري المؤتمر الأوروبي",
+      "fr": "Ligue Europa Conférence"
+    },
+    "39": {
+      "ar": "الدوري الإنجليزي الممتاز",
+      "fr": "Premier League"
+    },
+    "140": {
+      "ar": "الدوري الإسباني",
+      "fr": "Liga espagnole"
+    },
+    "135": {
+      "ar": "الدوري الإيطالي",
+      "fr": "Serie A"
+    },
+    "78": {
+      "ar": "الدوري الألماني",
+      "fr": "Bundesliga"
+    },
+    "61": {
+      "ar": "الدوري الفرنسي",
+      "fr": "Ligue 1"
+    },
+    "307": {
+      "ar": "دوري روشن السعودي",
+      "fr": "Saudi Pro League",
+      "en": "Saudi Pro League"
+    },
+    "233": {
+      "ar": "الدوري المصري الممتاز",
+      "fr": "Championnat d'Égypte",
+      "en": "Egyptian Premier League"
+    },
+    "200": {
+      "ar": "البطولة الوطنية المغربية",
+      "fr": "Botola Pro",
+      "en": "Botola Pro (Morocco)"
+    },
+    "188": {
+      "ar": "الدوري الأسترالي",
+      "fr": "A-League"
+    }
+  },
+  "teams": {
+    "Liverpool": {
+      "ar": "ليفربول"
+    },
+    "Arsenal": {
+      "ar": "أرسنال"
+    },
+    "Manchester City": {
+      "ar": "مانشستر سيتي"
+    },
+    "Manchester United": {
+      "ar": "مانشستر يونايتد"
+    },
+    "Chelsea": {
+      "ar": "تشيلسي"
+    },
+    "Tottenham": {
+      "ar": "توتنهام"
+    },
+    "Real Madrid": {
+      "ar": "ريال مدريد"
+    },
+    "Barcelona": {
+      "ar": "برشلونة",
+      "fr": "FC Barcelone"
+    },
+    "Atletico Madrid": {
+      "ar": "أتلتيكو مدريد",
+      "fr": "Atlético Madrid"
+    },
+    "Sevilla": {
+      "ar": "إشبيلية",
+      "fr": "FC Séville"
+    },
+    "Juventus": {
+      "ar": "يوفنتوس"
+    },
+    "Inter": {
+      "ar": "إنتر ميلان",
+      "fr": "Inter Milan"
+    },
+    "AC Milan": {
+      "ar": "ميلان"
+    },
+    "Napoli": {
+      "ar": "نابولي",
+      "fr": "Naples"
+    },
+    "Bayern Munich": {
+      "ar": "بايرن ميونخ",
+      "fr": "Bayern Munich"
+    },
+    "Paris Saint Germain": {
+      "ar": "باريس سان جيرمان",
+      "fr": "Paris Saint-Germain"
+    },
+    "Al-Hilal": {
+      "ar": "الهلال"
+    },
+    "Al-Nassr": {
+      "ar": "النصر"
+    },
+    "Al-Ittihad": {
+      "ar": "الاتحاد"
+    },
+    "Al-Ahli": {
+      "ar": "الأهلي السعودي"
+    },
+    "Al Ahly": {
+      "ar": "الأهلي"
+    },
+    "Zamalek": {
+      "ar": "الزمالك"
+    },
+    "Pyramids FC": {
+      "ar": "بيراميدز"
+    },
+    "Raja Casablanca": {
+      "ar": "الرجاء",
+      "fr": "Raja Casablanca"
+    },
+    "Wydad AC": {
+      "ar": "الوداد",
+      "fr": "Wydad AC"
+    },
+    "Sydney FC": {
+      "ar": "سيدني إف سي"
+    },
+    "Melbourne Victory": {
+      "ar": "ملبورن فيكتوري"
+    },
+    "Al-Shabab": {
+      "ar": "الشباب"
+    },
+    "Al-Ettifaq": {
+      "ar": "الاتفاق"
+    },
+    "Al Masry": {
+      "ar": "المصري"
+    },
+    "FAR Rabat": {
+      "ar": "الجيش الملكي",
+      "fr": "AS FAR"
+    },
+    "RS Berkane": {
+      "ar": "نهضة بركان",
+      "fr": "RS Berkane"
+    },
+    "Newcastle": {
+      "ar": "نيوكاسل"
+    },
+    "Getafe": {
+      "ar": "خيتافي"
+    },
+    "Valencia": {
+      "ar": "فالنسيا",
+      "fr": "Valence"
+    },
+    "Brisbane Roar": {
+      "ar": "بريسبان رور"
+    },
+    "Perth Glory": {
+      "ar": "بيرث غلوري"
+    }
+  }
+}

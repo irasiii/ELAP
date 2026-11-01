@@ -1,35 +1,11 @@
+import { countryByApiName } from './countries';
 import type { Lang } from './i18n';
 
-/** Arabic names for the countries API-Football returns in English. Add more as ELAP grows. */
-const COUNTRY_AR: Record<string, string> = {
-  World: 'دولي',
-  'Saudi Arabia': 'السعودية',
-  Egypt: 'مصر',
-  Morocco: 'المغرب',
-  Algeria: 'الجزائر',
-  Tunisia: 'تونس',
-  'United-Arab-Emirates': 'الإمارات',
-  'United Arab Emirates': 'الإمارات',
-  Qatar: 'قطر',
-  Kuwait: 'الكويت',
-  Jordan: 'الأردن',
-  Iraq: 'العراق',
-  England: 'إنجلترا',
-  Spain: 'إسبانيا',
-  Italy: 'إيطاليا',
-  Germany: 'ألمانيا',
-  France: 'فرنسا',
-  Portugal: 'البرتغال',
-  Netherlands: 'هولندا',
-  Turkey: 'تركيا',
-  Australia: 'أستراليا',
-  USA: 'الولايات المتحدة',
-  Brazil: 'البرازيل',
-  Argentina: 'الأرجنتين',
-};
-
-export function countryName(country: string, lang: Lang = 'ar'): string {
-  return lang === 'ar' ? COUNTRY_AR[country] ?? country : country;
+/** Country name in the viewer's language, for the English names API-Football returns. */
+export function countryName(country: string, lang: Lang): string {
+  if (/^world$/i.test(country)) return lang === 'ar' ? 'دولي' : lang === 'fr' ? 'International' : 'International';
+  const c = countryByApiName(country);
+  return c ? c.names[lang] : country.replace(/-/g, ' ');
 }
 
 /** One or two letters for a placeholder crest. Skips the Arabic article "ال" so clubs don't all show the same letters. */

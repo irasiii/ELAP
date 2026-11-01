@@ -42,6 +42,22 @@ Store builds use EAS: `npx eas-cli@latest build -p android` / `-p ios`, then `ea
 - The home screen shows the competitions listed in `apps/web/lib/server/leagues.ts`.
   Set `ELAP_SHOW_ALL_LEAGUES=1` to show everything API-Football returns.
 
+### Localization: language, time and country
+
+- **Language:** Arabic, English and French. Detected from the browser (`Accept-Language`) or the phone's settings;
+  viewers can change it (header picker on the web, Settings in the app). Arabic pages read right-to-left.
+- **Time:** every kickoff, date and "Last updated" stamp is shown in the viewer's own timezone.
+- **Country first:** each viewer sees their own country's competitions first, then international ones, then the rest.
+  The country comes from their choice, else the hosting geo header (`x-vercel-ip-country` / `cf-ipcountry`),
+  else the browser/phone region. Countries and their competitions are listed in `packages/core/src/countries.ts`.
+- **Names:** API-Football returns English names. `apps/web/data/names.json` translates league and team names;
+  anything missing stays in English.
+
+### Team pages
+
+`/team/:id` (web) and the team screen (app) show the team's form (last 5), upcoming schedule, recent results and an
+update story built from its matches (next match, live match, results). Open one from a match page by tapping a team.
+
 ### Channel, commentator and where to watch
 
 Edit `apps/web/data/broadcasts.json` (re-read every minute, no restart needed):

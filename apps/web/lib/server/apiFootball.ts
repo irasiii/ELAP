@@ -1,5 +1,5 @@
 import 'server-only';
-import { cached } from './cache';
+import { cachedTimed, type Timed } from './cache';
 
 const BASE_URL = 'https://v3.football.api-sports.io';
 
@@ -14,21 +14,21 @@ interface ApiEnvelope<T> {
 }
 
 /**
- * GET an API-Football endpoint through the shared cache.
+ * GET an API-Football endpoint through the shared cache. Returns the data and when it was fetched.
  * The key is read from the API_FOOTBALL_KEY environment variable and never leaves the server.
  */
 export async function apiFootball<T>(
   path: string,
   params: Record<string, string | number>,
   ttlSeconds: number,
-): Promise<T> {
+): Promise<Timed<T>> {
   const key = process.env.API_FOOTBALL_KEY;
   if (!key) throw new Error('API_FOOTBALL_KEY is not set');
 
   const qs = new URLSearchParams(Object.entries(params).map(([k, v]) => [k, String(v)])).toString();
   const url = `${BASE_URL}${path}${qs ? `?${qs}` : ''}`;
 
-  return cached(`af:${url}`, ttlSeconds, async () => {
+  return cachedTimed(`af:${url}`, ttlSeconds, async () => {
     const res = await fetch(url, {
       headers: { 'x-apisports-key': key },
       cache: 'no-store',

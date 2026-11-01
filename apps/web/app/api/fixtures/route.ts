@@ -1,19 +1,19 @@
-import { DEFAULT_TIMEZONE, dateForDay, isIsoDate, isValidTimeZone } from '@elap/core';
+import { dateForDay, isIsoDate } from '@elap/core';
 import { getFixtures } from '@/lib/server/service';
 import { corsHeaders } from '@/lib/server/http';
+import { readParams } from '@/lib/server/params';
 
 export const dynamic = 'force-dynamic';
 
-/** GET /api/fixtures?date=YYYY-MM-DD&tz=Area/City */
+/** GET /api/fixtures?date=YYYY-MM-DD&tz=Area/City&country=SA&lang=ar */
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const tzParam = url.searchParams.get('tz');
-  const tz = isValidTimeZone(tzParam) ? tzParam : DEFAULT_TIMEZONE;
+  const { timeZone, lang, country } = readParams(url);
   const dateParam = url.searchParams.get('date');
-  const date = isIsoDate(dateParam) ? dateParam : dateForDay('today', tz);
+  const date = isIsoDate(dateParam) ? dateParam : dateForDay('today', timeZone);
 
   try {
-    const data = await getFixtures(date, tz);
+    const data = await getFixtures(date, timeZone, country, lang);
     return Response.json(data, { headers: { ...corsHeaders, 'cache-control': 'public, max-age=15' } });
   } catch (err) {
     console.error('fixtures failed', err);

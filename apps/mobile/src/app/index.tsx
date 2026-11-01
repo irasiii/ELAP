@@ -1,17 +1,23 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, AppState, Pressable, RefreshControl, SectionList, StyleSheet, Text, View } from 'react-native';
 import { Link, Stack } from 'expo-router';
-import { countryName, dateForDay, deviceTimeZone, isInPlay, t } from '@elap/core';
-import type { DayKey, FixturesResponse } from '@elap/core';
+import { countryName, dateForDay, formatUpdated, isInPlay, t } from '@elap/core';
+import type { DayKey, FixturesResponse, LeagueTier } from '@elap/core';
 import { MatchRow } from '../components/MatchRow';
 import { api } from '../lib/api';
-import { colors, row, textStart } from '../lib/theme';
+import { usePrefs } from '../lib/prefs';
+import { colors } from '../lib/theme';
 
 const DAYS: DayKey[] = ['yesterday', 'today', 'tomorrow'];
 const LIVE_REFRESH_MS = 30_000;
+const TIER_TITLE: Record<LeagueTier, 'tierLocal' | 'tierInternational' | 'tierOther'> = {
+  local: 'tierLocal',
+  international: 'tierInternational',
+  other: 'tierOther',
+};
 
 export default function MatchesScreen() {
-  const timeZone = useMemo(() => deviceTimeZone(), []);
+  const { lang, country, timeZone, row, textStart } = usePrefs();
   const [day, setDay] = useState<DayKey>('today');
   const [data, setData] = useState<FixturesResponse | null>(null);
   const [error, setError] = useState(false);
@@ -19,12 +25,12 @@ export default function MatchesScreen() {
 
   const load = useCallback(async () => {
     try {
-      setData(await api.fixtures(dateForDay(day, timeZone), timeZone));
+      setData(await api.fixtures(dateForDay(day, timeZone), timeZone, { country, lang }));
       setError(false);
     } catch {
       setError(true);
     }
-  }, [day, timeZone]);
+  }, [day, timeZone, country, lang]);
 
   useEffect(() => {
     setData(null);
@@ -42,16 +48,22 @@ export default function MatchesScreen() {
     return () => clearInterval(timer);
   }, [anyLive, load]);
 
-  const sections = (data?.groups ?? []).map((g) => ({ key: String(g.league.id), group: g, data: g.matches }));
+  const sections = (data?.groups ?? []).map((g, i, all) => ({
+    key: String(g.league.id),
+    group: g,
+    tierTitle: i === 0 || all[i - 1].tier !== g.tier ? t(TIER_TITLE[g.tier], lang) : null,
+    data: g.matches,
+  }));
 
   return (
     <View style={styles.screen}>
       <Stack.Screen
         options={{
           headerRight: () => (
-            <Link href="/leagues" style={styles.headerLink}>
-              {t('leagues')}
-            </Link>
+            <View style={{ flexDirection: 'row', gap: 4 }}>
+              <Link href="/leagues" style={styles.headerLink}>{t('leagues', lang)}</Link>
+              <Link href="/settings" style={styles.headerLink}>{t('settings', lang)}</Link>
+            </View>
           ),
         }}
       />
@@ -65,21 +77,24 @@ export default function MatchesScreen() {
             accessibilityRole="tab"
             accessibilityState={{ selected: d === day }}
           >
-            <Text style={[styles.tabText, d === day && styles.tabTextActive]}>{t(d)}</Text>
+            <Text style={[styles.tabText, d === day && styles.tabTextActive]}>{t(d, lang)}</Text>
           </Pressable>
         ))}
       </View>
-      <Text style={styles.caption}>{t('localTimes')} · {timeZone}</Text>
+      <Text style={styles.caption}>
+        {t('localTimes', lang)} · {timeZone}
+        {data ? `\n${t('lastUpdated', lang)}: ${formatUpdated(data.updatedAt, timeZone, lang)}` : ''}
+      </Text>
 
-      {data?.sample && <Text style={styles.notice}>{t('sampleData')}</Text>}
+      {data?.sample && <Text style={styles.notice}>{t('sampleData', lang)}</Text>}
 
       {!data && !error && <ActivityIndicator color={colors.accent} style={{ marginTop: 40 }} />}
 
       {error && !data && (
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>{t('loadError')}</Text>
+          <Text style={styles.emptyText}>{t('loadError', lang)}</Text>
           <Pressable onPress={load} style={styles.retry} accessibilityRole="button">
-            <Text style={styles.retryText}>{t('retry')}</Text>
+            <Text style={styles.retryText}>{t('retry', lang)}</Text>
           </Pressable>
         </View>
       )}
@@ -88,7 +103,7 @@ export default function MatchesScreen() {
         <SectionList
           sections={sections}
           keyExtractor={(m) => String(m.id)}
-          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32, gap: 0 }}
+          contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
           stickySectionHeadersEnabled={false}
           refreshControl={
             <RefreshControl
@@ -102,18 +117,21 @@ export default function MatchesScreen() {
             />
           }
           renderSectionHeader={({ section }) => (
-            <View style={[styles.sectionHead, { flexDirection: row }]}>
-              <Text style={styles.code}>{(section.group.league.countryCode ?? section.group.league.country.slice(0, 3)).toUpperCase()}</Text>
-              <Text style={[styles.league, { textAlign: textStart }]} numberOfLines={1}>{section.group.league.name}</Text>
-              <Text style={styles.country}>{countryName(section.group.league.country)}</Text>
+            <View>
+              {section.tierTitle && <Text style={[styles.tier, { textAlign: textStart }]}>{section.tierTitle}</Text>}
+              <View style={[styles.sectionHead, { flexDirection: row }]}>
+                <Text style={styles.code}>{(section.group.league.countryCode ?? section.group.league.country.slice(0, 3)).toUpperCase()}</Text>
+                <Text style={[styles.league, { textAlign: textStart }]} numberOfLines={1}>{section.group.league.name}</Text>
+                <Text style={styles.country}>{countryName(section.group.league.country, lang)}</Text>
+              </View>
             </View>
           )}
           renderItem={({ item, index, section }) => (
             <View style={[styles.rowWrap, index === section.data.length - 1 && styles.rowLast]}>
-              <MatchRow match={item} timeZone={timeZone} />
+              <MatchRow match={item} />
             </View>
           )}
-          ListEmptyComponent={<Text style={styles.emptyText}>{t('noMatches')}</Text>}
+          ListEmptyComponent={<Text style={styles.emptyText}>{t('noMatches', lang)}</Text>}
         />
       )}
     </View>
@@ -122,33 +140,16 @@ export default function MatchesScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  headerLink: { color: colors.accent, fontSize: 15, fontWeight: '600', padding: 8 },
+  headerLink: { color: colors.accent, fontSize: 14, fontWeight: '600', padding: 8 },
   tabs: { margin: 16, marginBottom: 6, padding: 4, borderRadius: 14, backgroundColor: colors.surface, gap: 6 },
   tab: { flex: 1, height: 40, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
   tabActive: { backgroundColor: colors.accent },
   tabText: { color: colors.muted, fontSize: 14 },
   tabTextActive: { color: colors.accentInk, fontWeight: '700' },
-  caption: { color: colors.muted, fontSize: 12, textAlign: 'center', marginBottom: 10 },
-  notice: {
-    marginHorizontal: 16,
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 12,
-    backgroundColor: colors.notice,
-    color: colors.noticeText,
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  sectionHead: {
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 12,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    backgroundColor: colors.surface,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-  },
+  caption: { color: colors.muted, fontSize: 12, textAlign: 'center', marginBottom: 10, lineHeight: 18 },
+  notice: { marginHorizontal: 16, marginBottom: 10, padding: 10, borderRadius: 12, backgroundColor: colors.notice, color: colors.noticeText, fontSize: 13, textAlign: 'center' },
+  tier: { color: colors.accent, fontSize: 13, fontWeight: '700', marginTop: 18, marginBottom: 2 },
+  sectionHead: { alignItems: 'center', gap: 10, marginTop: 10, paddingHorizontal: 14, paddingVertical: 12, backgroundColor: colors.surface, borderTopLeftRadius: 16, borderTopRightRadius: 16 },
   code: { fontSize: 11, fontWeight: '700', color: colors.muted, backgroundColor: colors.line, paddingHorizontal: 6, paddingVertical: 2, borderRadius: 6, overflow: 'hidden' },
   league: { flex: 1, color: colors.text, fontSize: 14, fontWeight: '600' },
   country: { color: colors.muted, fontSize: 12 },

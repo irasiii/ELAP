@@ -1,16 +1,18 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { formatKickoff, hasScore, isInPlay, statusLabel } from '@elap/core';
+import { formatKickoff, formatShortDate, hasScore, isInPlay, statusLabel, t } from '@elap/core';
 import type { Match } from '@elap/core';
-import { colors, row } from '../lib/theme';
+import { usePrefs } from '../lib/prefs';
+import { colors } from '../lib/theme';
 import { Crest } from './Crest';
 
 /** Score in reading order: each team's goals sit beside that team. */
-export function ScoreText({ match, timeZone, size = 18 }: { match: Match; timeZone: string; size?: number }) {
+export function ScoreText({ match, size = 18 }: { match: Match; size?: number }) {
+  const { row, timeZone, lang } = usePrefs();
   const live = isInPlay(match.status);
   const color = live ? colors.accent : match.status === 'finished' ? colors.muted : colors.text;
   if (!hasScore(match)) {
-    return <Text style={[styles.score, { fontSize: size, color }]}>{formatKickoff(match.kickoff, timeZone)}</Text>;
+    return <Text style={[styles.score, { fontSize: size, color }]}>{formatKickoff(match.kickoff, timeZone, lang)}</Text>;
   }
   return (
     <View style={{ flexDirection: row, gap: 6 }}>
@@ -22,46 +24,47 @@ export function ScoreText({ match, timeZone, size = 18 }: { match: Match; timeZo
 }
 
 export function StatusChip({ match }: { match: Match }) {
+  const { lang } = usePrefs();
   const live = isInPlay(match.status);
-  return (
-    <Text style={[styles.chip, live && styles.chipLive]}>{statusLabel(match)}</Text>
-  );
+  return <Text style={[styles.chip, live && styles.chipLive]}>{statusLabel(match, lang)}</Text>;
 }
 
-export function MatchRow({ match, timeZone }: { match: Match; timeZone: string }) {
+export function MatchRow({ match, showDate = false }: { match: Match; showDate?: boolean }) {
+  const { row, rowReverse, lang, timeZone } = usePrefs();
   return (
     <Pressable
       onPress={() => router.push(`/match/${match.id}`)}
-      style={({ pressed }) => [styles.row, pressed && { backgroundColor: colors.surface2 }]}
+      style={({ pressed }) => [styles.wrap, pressed && { backgroundColor: colors.surface2 }]}
       accessibilityRole="button"
-      accessibilityLabel={`${match.home.name} ضد ${match.away.name}، ${statusLabel(match)}`}
+      accessibilityLabel={`${match.home.name} ${t('vs', lang)} ${match.away.name}, ${statusLabel(match, lang)}`}
     >
-      <View style={[styles.team, { flexDirection: row }]}>
-        <Crest team={match.home} />
-        <Text style={styles.name} numberOfLines={1}>{match.home.name}</Text>
-      </View>
-      <View style={styles.center}>
-        <ScoreText match={match} timeZone={timeZone} />
-        <StatusChip match={match} />
-      </View>
-      <View style={[styles.team, { flexDirection: row === 'row' ? 'row-reverse' : 'row' }]}>
-        <Crest team={match.away} />
-        <Text style={styles.name} numberOfLines={1}>{match.away.name}</Text>
+      {showDate && (
+        <Text style={styles.date}>
+          {formatShortDate(match.kickoff, timeZone, lang)} · {match.league.name}
+        </Text>
+      )}
+      <View style={[styles.row, { flexDirection: row }]}>
+        <View style={[styles.team, { flexDirection: row }]}>
+          <Crest team={match.home} />
+          <Text style={styles.name} numberOfLines={1}>{match.home.name}</Text>
+        </View>
+        <View style={styles.center}>
+          <ScoreText match={match} />
+          <StatusChip match={match} />
+        </View>
+        <View style={[styles.team, { flexDirection: rowReverse }]}>
+          <Crest team={match.away} />
+          <Text style={styles.name} numberOfLines={1}>{match.away.name}</Text>
+        </View>
       </View>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    flexDirection: row,
-    alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: 14,
-    borderTopWidth: 1,
-    borderTopColor: colors.surface2,
-    minHeight: 60,
-  },
+  wrap: { paddingVertical: 12, paddingHorizontal: 14, borderTopWidth: 1, borderTopColor: colors.surface2, minHeight: 60 },
+  row: { alignItems: 'center' },
+  date: { color: colors.muted, fontSize: 11, textAlign: 'center', marginBottom: 6 },
   team: { flex: 1, alignItems: 'center', gap: 8, minWidth: 0 },
   name: { color: colors.text, fontSize: 14, fontWeight: '500', flexShrink: 1 },
   center: { width: 92, alignItems: 'center', gap: 2 },

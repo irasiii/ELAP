@@ -1,4 +1,5 @@
 /** Timezone helpers. Data is stored in UTC; every screen converts to the viewer's own timezone. */
+import type { Lang } from './i18n';
 
 export const DEFAULT_TIMEZONE = 'Africa/Cairo';
 
@@ -56,9 +57,14 @@ export function isIsoDate(value: string | null | undefined): value is string {
   return !!value && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
 }
 
+/** Intl locale per app language. Arabic keeps Western digits, as most Arabic football sites do. */
+export function intlLocale(lang: Lang): string {
+  return lang === 'ar' ? 'ar-EG-u-nu-latn' : lang === 'fr' ? 'fr-FR' : 'en-GB';
+}
+
 /** Kickoff time like "18:30" in the viewer's timezone. */
-export function formatKickoff(iso: string, timeZone: string, locale = 'ar'): string {
-  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', {
+export function formatKickoff(iso: string, timeZone: string, lang: Lang): string {
+  return new Intl.DateTimeFormat(intlLocale(lang), {
     timeZone,
     hour: '2-digit',
     minute: '2-digit',
@@ -67,11 +73,28 @@ export function formatKickoff(iso: string, timeZone: string, locale = 'ar'): str
 }
 
 /** Long date like "الأحد 1 نوفمبر" in the viewer's timezone. */
-export function formatMatchDate(iso: string, timeZone: string, locale = 'ar'): string {
-  return new Intl.DateTimeFormat(locale === 'ar' ? 'ar-EG-u-nu-latn' : 'en-GB', {
+export function formatMatchDate(iso: string, timeZone: string, lang: Lang): string {
+  return new Intl.DateTimeFormat(intlLocale(lang), {
     timeZone,
     weekday: 'long',
     day: 'numeric',
     month: 'long',
+  }).format(new Date(iso));
+}
+
+/** Short date like "1 Nov" for schedules. */
+export function formatShortDate(iso: string, timeZone: string, lang: Lang): string {
+  return new Intl.DateTimeFormat(intlLocale(lang), { timeZone, day: 'numeric', month: 'short' }).format(new Date(iso));
+}
+
+/** "Last updated" stamp like "10:42" (today) or "31 Oct, 22:05". */
+export function formatUpdated(iso: string, timeZone: string, lang: Lang, now: Date = new Date()): string {
+  const sameDay = localDate(iso, timeZone) === localDate(now, timeZone);
+  return new Intl.DateTimeFormat(intlLocale(lang), {
+    timeZone,
+    ...(sameDay ? {} : { day: 'numeric', month: 'short' }),
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
   }).format(new Date(iso));
 }
