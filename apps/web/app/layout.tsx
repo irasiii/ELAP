@@ -47,6 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <nav className="main-nav" aria-label={t('matches', lang)}>
               <Link href="/">{t('matches', lang)}</Link>
               <Link href="/leagues">{t('leagues', lang)}</Link>
+              <Link href="/favourites">{t('favourites', lang)}</Link>
             </nav>
             <Prefs lang={lang} country={viewer.country} countryChosen={viewer.countryChosen} />
           </div>

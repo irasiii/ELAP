@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { countryName, formatUpdated, storyText, t } from '@elap/core';
 import type { FormResult, Lang, TeamDetail } from '@elap/core';
 import { Crest } from '@/components/Crest';
+import { FavouriteButton } from '@/components/FavouriteButton';
 import { MatchRow } from '@/components/MatchRow';
 import { readId } from '@/lib/server/params';
 import { getTeam } from '@/lib/server/service';
@@ -54,6 +55,7 @@ export default async function TeamPage({ params }: { params: Promise<{ id: strin
             </div>
           )}
         </div>
+        <FavouriteButton team={d.team} lang={lang} />
       </section>
       <p className="updated">
         {t('lastUpdated', lang)}: <time dateTime={d.updatedAt}>{formatUpdated(d.updatedAt, tz, lang)}</time>

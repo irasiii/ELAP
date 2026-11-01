@@ -28,6 +28,8 @@ jobs:
       - run: npm ci
       - name: Typecheck (core, web, mobile)
         run: npm run typecheck
+      - name: Unit tests
+        run: npm test
       - name: Build website
         run: npm run web:build
       - name: Dependency audit (production, high and critical fail the build)

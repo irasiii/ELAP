@@ -87,7 +87,16 @@ export default function MatchScreen() {
 
       <View>
         <Text style={[styles.h2, { textAlign: textStart }]}>{t('whereToWatch', lang)}</Text>
-        {m.broadcast.watch.length === 0 ? (
+        {m.broadcast.licensedStreamUrl && (
+          <Pressable
+            onPress={() => Linking.openURL(m.broadcast.licensedStreamUrl as string)}
+            style={[styles.streamBtn, { flexDirection: row }]}
+            accessibilityRole="link"
+          >
+            <Text style={styles.streamText}>▶ {t('watchLive', lang)}</Text>
+          </Pressable>
+        )}
+        {m.broadcast.watch.length === 0 && !m.broadcast.licensedStreamUrl ? (
           <Text style={[styles.muted, { textAlign: textStart }]}>{t('noWatch', lang)}</Text>
         ) : (
           m.broadcast.watch.map((w) => (
@@ -144,6 +153,18 @@ export default function MatchScreen() {
                   <Text style={styles.infoValue}>{p.name}</Text>
                 </View>
               ))}
+              {l.substitutes.length > 0 && (
+                <>
+                  <Text style={[styles.subsTitle, { textAlign: textStart }]}>{t('substitutes', lang)}</Text>
+                  {l.substitutes.map((p) => (
+                    <View key={`sub-${p.number}-${p.name}`} style={[styles.player, { flexDirection: row }]}>
+                      <Text style={styles.num}>{p.number ?? '–'}</Text>
+                      <Text style={[styles.infoValue, styles.subName]}>{p.name}</Text>
+                    </View>
+                  ))}
+                </>
+              )}
+              {l.coach && <Text style={[styles.coach, { textAlign: textStart }]}>{t('coach', lang)}: {l.coach}</Text>}
             </View>
           ))
         )}
@@ -174,4 +195,9 @@ const styles = StyleSheet.create({
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.muted },
   player: { gap: 12, paddingHorizontal: 16, paddingVertical: 6 },
   num: { color: colors.muted, fontWeight: '700', width: 24, textAlign: 'center' },
+  subsTitle: { color: colors.muted, fontSize: 12, fontWeight: '700', paddingHorizontal: 16, paddingTop: 12, paddingBottom: 4, borderTopWidth: 1, borderTopColor: colors.surface2, marginTop: 8 },
+  subName: { color: colors.muted },
+  coach: { color: colors.muted, fontSize: 13, paddingHorizontal: 16, paddingTop: 10, paddingBottom: 14 },
+  streamBtn: { alignItems: 'center', justifyContent: 'center', minHeight: 48, borderRadius: 14, backgroundColor: colors.accent, marginBottom: 8 },
+  streamText: { color: colors.accentInk, fontWeight: '700', fontSize: 15 },
 });

@@ -153,3 +153,51 @@ h1, h2, h3 { margin: 0; }
   .prefs label { flex: 1; }
   .prefs select { width: 100%; }
 }
+
+/* Favourites */
+.fav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.fav-btn:hover { border-color: var(--accent); }
+.fav-btn.is-on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.team-head .fav-btn { margin-inline-start: auto; }
+.favourites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; padding-bottom: 48px; }
+.favourite { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; }
+.favourite-team { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--text); text-decoration: none; }
+.favourite-name { display: flex; flex-direction: column; min-width: 0; font-size: 14px; }
+.favourite-name strong { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.favourite-team:hover strong { color: var(--accent); }
+.fav-remove { flex: none; min-height: 34px; padding: 0 10px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; }
+.fav-remove:hover { border-color: #ff8a7a; color: #ff8a7a; }
+
+/* Lineup substitutes */
+.subs-title { margin: 0; padding: 12px 18px 0; border-top: 1px solid var(--surface-2); font-size: 12px; font-weight: 600; color: var(--muted); }
+.lineup .subs li { font-size: 13px; color: var(--muted); }
+
+/* Status pages */
+.status-page { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 80px 0; text-align: center; }
+.status-page h1 { font-size: 26px; }
+.status-page p { margin: 0; max-width: 46ch; color: var(--muted); }
+.button { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 20px; border-radius: 10px; border: 0; background: var(--accent); color: var(--accent-ink); font: inherit; font-weight: 700; text-decoration: none; cursor: pointer; }
+.button:hover { filter: brightness(1.08); }
+.loading-page { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 80px 0; color: var(--muted); }
+.spinner { width: 28px; height: 28px; border-radius: 50%; border: 3px solid var(--line); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spinner { animation-duration: 2s; } }
+
+@media (max-width: 640px) {
+  .fav-label { display: none; }
+  .fav-btn { padding: 0 11px; }
+  .team-head { flex-wrap: wrap; }
+}

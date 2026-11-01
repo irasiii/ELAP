@@ -61,6 +61,7 @@ export default function MatchesScreen() {
         options={{
           headerRight: () => (
             <View style={{ flexDirection: 'row', gap: 4 }}>
+              <Link href="/favourites" style={styles.headerLink}>{t('favourites', lang)}</Link>
               <Link href="/leagues" style={styles.headerLink}>{t('leagues', lang)}</Link>
               <Link href="/settings" style={styles.headerLink}>{t('settings', lang)}</Link>
             </View>

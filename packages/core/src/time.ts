@@ -54,7 +54,10 @@ export function addDays(date: string, days: number): string {
 }
 
 export function isIsoDate(value: string | null | undefined): value is string {
-  return !!value && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(`${value}T00:00:00Z`));
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const d = new Date(`${value}T00:00:00Z`);
+  // Round-trip check rejects impossible dates like 2026-02-30, which Date rolls over.
+  return !Number.isNaN(d.getTime()) && d.toISOString().slice(0, 10) === value;
 }
 
 /** Intl locale per app language. Arabic keeps Western digits, as most Arabic football sites do. */

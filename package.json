@@ -10,9 +10,14 @@
     "web:build": "npm run build -w web",
     "mobile": "npm run start -w mobile",
     "typecheck": "npm run typecheck -w @elap/core && npx tsc --noEmit -p apps/web && npx tsc --noEmit -p apps/mobile",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "audit:prod": "npm audit --omit=dev --audit-level=high"
   },
   "engines": {
     "node": ">=20"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.5"
   }
 }

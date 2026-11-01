@@ -15,6 +15,7 @@ export function readParams(url: URL, fallbackLang: Lang = 'ar') {
 }
 
 export function readId(raw: string): number | null {
+  if (!/^\d+$/.test(raw)) return null;
   const n = Number(raw);
-  return Number.isInteger(n) && n > 0 && n < 2 ** 31 ? n : null;
+  return n > 0 && n < 2 ** 31 ? n : null;
 }

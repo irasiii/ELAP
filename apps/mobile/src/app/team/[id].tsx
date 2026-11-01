@@ -6,6 +6,7 @@ import type { FormResult, TeamDetail } from '@elap/core';
 import { Crest } from '../../components/Crest';
 import { MatchRow } from '../../components/MatchRow';
 import { api } from '../../lib/api';
+import { useFavourites } from '../../lib/favourites';
 import { usePrefs } from '../../lib/prefs';
 import { colors } from '../../lib/theme';
 
@@ -15,6 +16,7 @@ const FORM_BG: Record<FormResult, string> = { W: colors.accent, D: colors.draw, 
 export default function TeamScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { lang, timeZone, row, textStart } = usePrefs();
+  const { isFavourite, toggle } = useFavourites();
   const [d, setD] = useState<TeamDetail | null>(null);
   const [error, setError] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -43,6 +45,11 @@ export default function TeamScreen() {
   const facts = [d.team.country ? countryName(d.team.country, lang) : null, d.team.venue, d.team.founded ? `${t('founded', lang)} ${d.team.founded}` : null]
     .filter(Boolean)
     .join(' · ');
+
+  const fav = isFavourite(d.team.id);
+  const favLabel = t(fav ? 'removeFavourite' : 'addFavourite', lang);
+  const toggleFav = () =>
+    toggle({ id: d.team.id, name: d.team.name, logo: d.team.logo, country: d.team.country });
 
   return (
     <ScrollView
@@ -77,6 +84,16 @@ export default function TeamScreen() {
             )}
           </View>
         </View>
+        <Pressable
+          onPress={toggleFav}
+          style={[styles.favBtn, fav && styles.favBtnOn, { flexDirection: row }]}
+          accessibilityRole="button"
+          accessibilityState={{ selected: fav }}
+          accessibilityLabel={favLabel}
+        >
+          <Text style={[styles.favStar, fav && styles.favStarOn]}>{fav ? '★' : '☆'}</Text>
+          <Text style={[styles.favText, fav && styles.favTextOn]}>{favLabel}</Text>
+        </Pressable>
         <Text style={styles.updated}>
           {t('lastUpdated', lang)}: {formatUpdated(d.updatedAt, timeZone, lang)}
         </Text>
@@ -153,4 +170,20 @@ const styles = StyleSheet.create({
   story: { gap: 12, paddingHorizontal: 16, paddingVertical: 12, alignItems: 'flex-start' },
   storyDot: { width: 10, height: 10, borderRadius: 5, marginTop: 5 },
   storyText: { flex: 1, color: colors.text, fontSize: 14, lineHeight: 20 },
+  favBtn: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 14,
+    paddingHorizontal: 16,
+    minHeight: 40,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  favBtnOn: { backgroundColor: colors.accent, borderColor: colors.accent },
+  favStar: { color: colors.text, fontSize: 16 },
+  favStarOn: { color: colors.accentInk },
+  favText: { color: colors.text, fontSize: 13, fontWeight: '600' },
+  favTextOn: { color: colors.accentInk },
 });

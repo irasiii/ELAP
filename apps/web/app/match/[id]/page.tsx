@@ -124,6 +124,19 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
                     </li>
                   ))}
                 </ul>
+                {l.substitutes.length > 0 && (
+                  <>
+                    <h4 className="subs-title">{t('substitutes', lang)}</h4>
+                    <ul className="subs">
+                      {l.substitutes.map((p) => (
+                        <li key={`sub-${p.number}-${p.name}`}>
+                          <span className="num" dir="ltr">{p.number ?? '–'}</span>
+                          <span>{p.name}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
+                )}
                 {l.coach && <p className="muted coach">{t('coach', lang)}: {l.coach}</p>}
               </section>
             ))

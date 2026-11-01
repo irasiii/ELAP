@@ -6,7 +6,7 @@ Arabic (RTL) first; every kickoff time is shown in the viewer's own timezone.
 ```
 apps/web      Next.js website + ELAP's backend API (/api/*)
 apps/mobile   Expo (React Native) app for Android and iPhone
-packages/core Shared types, API client, time/status helpers, Arabic + English text
+packages/core Shared types, API client, time/status helpers, Arabic, English and French text
 ```
 
 ## Run it
@@ -32,7 +32,14 @@ cp apps/mobile/.env.example apps/mobile/.env
 npm run mobile       # then scan the QR code with Expo Go on your phone
 ```
 
-Store builds use EAS: `npx eas-cli@latest build -p android` / `-p ios`, then `eas submit`.
+Store builds use EAS. `apps/mobile/eas.json` defines two profiles: `preview` (internal APK / iOS simulator) and
+`production` (store). Set `EXPO_PUBLIC_API_URL` as an EAS environment variable for the production channel, then:
+
+```bash
+cd apps/mobile
+npx eas-cli@latest build -p android --profile production
+npx eas-cli@latest submit -p android --profile production
+```
 
 ## How it works
 
@@ -72,9 +79,31 @@ Edit `apps/web/data/broadcasts.json` (re-read every minute, no restart needed):
 `licensedStreamUrl` on a match shows a video player. Only use it for streams you hold the rights to;
 the app stores reject apps that re-stream broadcasts without rights.
 
+### Favourites
+
+Viewers can star a team on its page; favourites are stored on the device only (`localStorage` on the web,
+`AsyncStorage` in the app), so there is no account or server-side storage. The list lives at `/favourites`
+on the website and in the Favourites screen in the app.
+
+## Deployment
+
+The website and API deploy together to Vercel; no extra services are required.
+
+1. Import the repository in Vercel and set **Root Directory** to `apps/web`.
+   Vercel detects the root `package.json` workspaces and installs the monorepo automatically.
+2. Add `API_FOOTBALL_KEY` in **Settings → Environment Variables** (Production and Preview).
+   Optionally set `ELAP_SHOW_ALL_LEAGUES=1`.
+3. Deploy. `next build` is the build command and `next start` the start command (defaults).
+
+The in-memory cache in `apps/web/lib/server/cache.ts` is per instance. On a single instance it already caps
+API-Football usage; when running several instances, swap it for a shared store such as Upstash Redis.
+The mobile app then points `EXPO_PUBLIC_API_URL` at the deployed URL.
+
 ## Checks
 
 ```bash
+npm test             # Vitest: time/status/story/i18n/country helpers + cache and param validation
 npm run typecheck
 npm run web:build
+npm run audit:prod
 ```
